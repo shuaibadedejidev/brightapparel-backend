@@ -1,0 +1,8 @@
+Server listening on http://localhost:5000
+{
+  id: 'a32de275-4493-4117-b186-b20174113ec4',
+  iat: 1790197626,
+  exp: 1790629626
+}
+req, got
+PS C:\Users\Bright Tech\Desktop\Apparell\backend> 

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                /* Standard modern JavaScript version */
+    "module": "NodeNext",              /* How imports/exports work */
+    "moduleResolution": "NodeNext",    /* Keeps module resolution aligned with Node */
+    "outDir": "./dist",                /* Folder where compiled .js files go */
+    "rootDir": "./src",                /* Folder where your .ts files live */
+    "strict": true,                    /* Enables strict type checking */
+    "esModuleInterop": true,           /* Allows clean imports like 'import express from "express"' */
+    "skipLibCheck": true              /* Speeds up compilation */
+  },
+  "include": ["src/**/*"],             /* Tells TS to only check files inside /src */
+  "exclude": ["node_modules", "dist", "build"]
+}
