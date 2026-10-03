@@ -57,7 +57,8 @@ export const signUp = async (req: Request<{}, {}, signUpBody>, res: Response) =>
                 data: {
                     fullName,
                     email,
-                    password: hashedPassword
+                    password: hashedPassword,
+                    role: 'ADMIN',
                 }
             })
 
