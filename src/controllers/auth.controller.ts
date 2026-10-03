@@ -10,8 +10,8 @@ const setToken = (id: string, res: Response) => {
     const token = jwt.sign({ id }, ENV_VARIABLES.JWT_SECRET as string, { expiresIn: '5d'})
     res.cookie('authToken', token, {
         httpOnly: true,
+        sameSite: ENV_VARIABLES.NODE_ENV === 'production' ? 'none' : 'strict',
         secure: ENV_VARIABLES.NODE_ENV === 'production',
-        sameSite: 'strict',
         maxAge: 5 * 24 * 60 * 60 * 1000,
     })
 }
