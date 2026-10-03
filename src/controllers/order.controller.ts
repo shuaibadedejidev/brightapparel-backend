@@ -234,6 +234,7 @@ export const handlePaymentWebhook = async (req: Request, res: Response) => {
 
         const paystackSignature = req.headers['x-paystack-signature'];
 
+        // Verify HMAC signature using JSON.stringify
         const hash = crypto
             .createHmac('sha512', PAYSTACK_SECRET_KEY)
             .update(JSON.stringify(req.body))
@@ -244,25 +245,28 @@ export const handlePaymentWebhook = async (req: Request, res: Response) => {
             return res.status(400).send('Invalid signature');
         }
 
-        const event = JSON.parse(req.body.toString());
+        // req.body is ALREADY parsed by Express json middleware
+        const event = req.body;
 
         if (event.event === 'charge.success') {
-            const { orderId } = event.data.metadata;
+            const orderId = event.data?.metadata?.orderId;
 
-            await db.order.update({
-                where: { id: orderId },
-                data: {
-                    status: 'PAID',
-                    paymentReference: event.data.reference,
-                },
-            });
-
+            if (orderId) {
+                await db.order.update({
+                    where: { id: orderId },
+                    data: {
+                        status: 'PAID',
+                        paymentReference: event.data.reference,
+                    },
+                });
+                console.log(`✅ Order ${orderId} marked as PAID`);
+            }
         }
 
-        //sent so paystack can stop sending webhook
-        res.status(200).send('Webhook Processed');
+        // Return 200 OK to inform Paystack the event was handled
+        return res.status(200).send('Webhook Processed');
     } catch (error: any) {
         console.error('Webhook Error:', error.message);
-        res.status(500).send(`Webhook Error: ${error.message}`);
+        return res.status(500).send(`Webhook Error: ${error.message}`);
     }
 };
