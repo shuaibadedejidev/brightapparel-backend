@@ -18,10 +18,11 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
-const clientUrl: string = ENV_VARIABLES.CLIENT_URL.replace(/\/$/, '') // Removes trailing slash if present,
+const clientUrlRaw = ENV_VARIABLES.CLIENT_URL ?? 'http://localhost:5173';
+const CLIENT_URL = clientUrlRaw.replace(/\/$/, '');
 
 app.use(cors({
-    origin: clientUrl,
+    origin: CLIENT_URL,
     credentials: true 
 }))
 
@@ -32,7 +33,7 @@ app.use('/api/cart', cartRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/admin', adminRoutes)
 
-const PORT = ENV_VARIABLES.PORT
+const PORT = ENV_VARIABLES.PORT || 5000
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });  

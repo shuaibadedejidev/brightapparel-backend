@@ -5,7 +5,7 @@ import ENV_VARIABLES from "../lib/ENV.js"
 import crypto from 'crypto'
 
 export const createOrder = async (req: Request, res: Response) => {
-    const { id: userId } = req.user
+    const userId = req.user!.id
     const { name, phone, address, additionalNotes, deliveryOption } = req.body
 
     if (!name || !phone || !address)
@@ -63,13 +63,13 @@ export const createOrder = async (req: Request, res: Response) => {
         const paystackResponse = await axios.post(
             'https://api.paystack.co/transaction/initialize',
             {
-                email: req.user.email,
+                email: req.user!.email,
                 currency: 'NGN',
                 amount: totalPayable,
                 callback_url: `${ENV_VARIABLES.CLIENT_URL}/orders/${order.id}/verify`,
                 metadata: {
                     orderId: order.id,
-                    userId: req.user.id,
+                    userId: req.user!.id,
                 },
             },
             {
@@ -88,7 +88,7 @@ export const createOrder = async (req: Request, res: Response) => {
 }
 
 export const getUserOrders = async (req: Request, res: Response) => {
-    const userId = req.user.id
+    const userId = req.user!.id
 
     try {
         const orders = await db.order.findMany({
@@ -209,7 +209,7 @@ export const verifyOrderPayment = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Order not found" });
         }
 
-        if ((order?.userId) as string !== (req?.user?.id) as string) {
+        if ((order?.userId) as string !== (req?.user!.id) as string) {
             return res.status(403).json({ error: "Unauthorized" });
         }
         
@@ -223,14 +223,19 @@ export const verifyOrderPayment = async (req: Request, res: Response) => {
     }
 };
 
-export const handlePaymentWebhook = async (req, res) => {
+export const handlePaymentWebhook = async (req: Request, res: Response) => {
     try {
+        const PAYSTACK_SECRET_KEY = ENV_VARIABLES.PAYSTACK_SECRET_KEY;
+
+        if (!PAYSTACK_SECRET_KEY) {
+            throw new Error('PAYSTACK_SECRET_KEY environment variable is missing');
+        }
         console.log("--- WEBHOOK HIT ---");
 
         const paystackSignature = req.headers['x-paystack-signature'];
 
         const hash = crypto
-            .createHmac('sha512', ENV_VARIABLES?.PAYSTACK_SECRET_KEY)
+            .createHmac('sha512', PAYSTACK_SECRET_KEY)
             .update(req.body)
             .digest('hex');
 

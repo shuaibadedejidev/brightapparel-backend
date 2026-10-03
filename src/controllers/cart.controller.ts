@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { db } from '../db.js'; 
 
-export const getCart = async (req: AuthRequest, res: Response) => {
+export const getCart = async (req: Request, res: Response) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user!.id;
 
         const items = await db.cart.findMany({
             where: { userId },
@@ -34,11 +34,9 @@ export const getCart = async (req: AuthRequest, res: Response) => {
     }
 };
 
-import { AuthRequest } from '../middlewares/auth.middleware.js';
-
-export const addToCart = async (req: AuthRequest, res: Response) => {
+export const addToCart = async (req: Request, res: Response) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user!.id;
         const { product: productId, price, image, color, size, quantity, category } = req.body;
 
         const cartItem = await db.cart.upsert({
@@ -88,9 +86,9 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
     }
 };
 
-export const updateQuantity = async (req: AuthRequest, res: Response) => {
+export const updateQuantity = async (req: Request, res: Response) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user!.id;
         const { cartId, action, value } = req.body; // action: 'INCREMENT' | 'DECREMENT'
 
         const existing = await db.cart.findFirst({
@@ -125,7 +123,7 @@ export const updateQuantity = async (req: AuthRequest, res: Response) => {
 
 export const removeFromCart = async (req: Request, res: Response) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user!.id;
         const { id } = req.params;
 
         await db.cart.deleteMany({

@@ -92,17 +92,20 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const whereClause: any = {}
     
     if (category) {
-        const categoryList = Array.isArray(category) ? category : [category]
-        whereClause.category = { in: categoryList.map(category => category?.toUpperCase()) } 
-    }
-    
-    if (gender) {
-        const genderList = Array.isArray(gender) ? gender : [gender]
-        whereClause.gender = {
-            in: genderList.map(gender => gender?.toUpperCase())
-        }
+        const categoryList = Array.isArray(category) ? category : [category];
+
+        whereClause.category = {
+            in: categoryList.map((item) => String(item).toUpperCase())
+        };
     }
 
+    if (gender) {
+        const genderList = Array.isArray(gender) ? gender : [gender];
+
+        whereClause.gender = {
+            in: genderList.map((item) => String(item).toUpperCase())
+        };
+    }
 
     try {
         let allProducts = await db.product.findMany({

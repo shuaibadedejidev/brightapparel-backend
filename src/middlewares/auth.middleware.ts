@@ -9,17 +9,7 @@ interface tokenPayload {
     id: string
 }
 
-// Extend Express Request locally
-export interface AuthRequest extends Request {
-    user?: {
-        id: string
-        email?: string
-        role?: string
-        [key: string]: any // Accepts dynamic/varying fields
-    }
-}
-
-export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies.authToken;
         if (!token) return res.status(401).json({ error: 'No token provided' })
@@ -45,7 +35,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
     }
 }
 
-export const adminMiddlware = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const adminMiddlware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (req.user?.role !== 'ADMIN') return res.status(403).json({ error: 'Only admin can perform this action' })
         next()
