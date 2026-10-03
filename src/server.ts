@@ -1,5 +1,4 @@
 import express from 'express';
-import { Request, Response, NextFunction } from 'express'
 
 import cookieParser from 'cookie-parser'
 import cors from 'cors';
@@ -12,7 +11,9 @@ import cartRoutes from './routes/cart.route.js'
 import orderRoutes from './routes/order.route.js'
 import adminRoutes from './routes/admin.route.js'
 
+// Trust proxy header from Render / load balancer
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(cookieParser())
 app.use(express.json())

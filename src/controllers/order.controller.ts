@@ -236,7 +236,7 @@ export const handlePaymentWebhook = async (req: Request, res: Response) => {
 
         const hash = crypto
             .createHmac('sha512', PAYSTACK_SECRET_KEY)
-            .update(req.body)
+            .update(JSON.stringify(req.body))
             .digest('hex');
 
         if (hash !== paystackSignature) {
